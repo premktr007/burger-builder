@@ -24,7 +24,11 @@ const modal = React.memo(
     ); 
     },
   (prevProps, nextProps) => {
-    return prevProps.show === nextProps.show;   // if it is true. component not update
+    // update only props and chilren component changes. if it is true. component not update
+    return (prevProps.show === nextProps.show) && 
+          (prevProps.children === nextProps.children);
+    /* that supposed to be || condition unfortunetly that is not working so it is 
+      chnaged to && */
   }
 );
 

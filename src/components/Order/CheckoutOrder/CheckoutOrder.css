@@ -1,0 +1,11 @@
+.CheckOutOrder {
+    text-align: center;
+    margin: auto;
+    width: 80%;
+}
+
+@media only screen and (max-width: 600px){
+    .CheckoutOrder {
+        width: 500px;
+    }
+}
