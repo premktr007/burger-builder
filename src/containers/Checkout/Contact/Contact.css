@@ -1,0 +1,18 @@
+.Contact {
+    margin: 20px auto;
+    width: 80%;
+    text-align: center;
+    box-shadow: 5px 5px 10px #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.Contact input {
+    display: block;
+}
+
+@media (max-width: 600px) {
+    .Contact {
+        width: 500px;
+    }
+}

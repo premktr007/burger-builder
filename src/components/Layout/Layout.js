@@ -10,7 +10,6 @@ export class Layout extends Component {
         showDrawer: false
     }
 
-    
     sideDrawerOpen = () => {
         this.setState({showDrawer: true});
     }

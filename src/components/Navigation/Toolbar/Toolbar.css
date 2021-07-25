@@ -17,8 +17,18 @@
     height: 100%;
 }
 
+.ToggleMenu {
+    display: none;
+}
+
 @media screen and (max-width: 499px) {
     .DesktopOnly {
         display: none;
+    }
+}
+
+@media screen and (max-width: 499px)  {
+    .ToggleMenu {
+        display: block;
     }
 }
