@@ -1,0 +1,35 @@
+.Input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.Label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.InputElement {
+    outline: none;
+    border: 1px solid #ccc;
+    background-color: white;
+    font: inherit;
+    padding: 6px 10px;
+    box-sizing: border-box;
+    width: 50%;
+}
+
+.InputElement:focus {
+    outline: none;
+    background-color: #ccc;
+}
+
+@media (max-width: 426px) {
+    .InputElement {
+        width: 75%;
+    }
+}

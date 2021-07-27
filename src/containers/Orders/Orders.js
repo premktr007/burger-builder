@@ -16,8 +16,7 @@ const orders = () => {
     useEffect(() => {
         axiosInstance.get('/orders.json').then(res => {
             transformData(res);
-            /* didn't understand properly but the guess is that we already setting the state in transformData() 
-            so setting the state again might require to merge the value with previous state*/
+            /* functional components will have functional setStates */
             setState(prevState => ({ ...prevState, loading: false}));  
         }).catch(err => {
             console.log(err)
@@ -48,6 +47,8 @@ const orders = () => {
         //         address: orderObj.address
         //     }
         // });
+        
+        // this should be functional setState
         setState({orders: ordersData })
     }
     
@@ -56,6 +57,7 @@ const orders = () => {
                 key={order.id}
                 ingredients={order.ingredients} 
                 price={order.price}
+                customer={order.customerDetails}
                 />); 
         
     if(stateValue.loading) {

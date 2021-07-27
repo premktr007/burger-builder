@@ -11,6 +11,10 @@
     display: block;
 }
 
+.Form {
+    border: 1px solid #ccc;
+}
+
 @media (max-width: 600px) {
     .Contact {
         width: 500px;

@@ -13,6 +13,7 @@ const order = (props) => {
 
   return (
     <div className={classes.Order}>
+      <p> <b>{props.customer.name}</b> &nbsp; {props.customer.phone}</p>
       <p className={classes.Ingredients}> <b>Ingredients: </b>{ingredients} </p>
       <p>
         Cost: <b>{props.price}</b> INR
