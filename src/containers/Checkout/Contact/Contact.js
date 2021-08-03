@@ -1,11 +1,14 @@
 import React, { useState, Fragment } from 'react';
 import { withRouter } from 'react-router';
+import { connect } from 'react-redux';
 
 import classes from './Contact.css';
 import Button from '../../../components/UI/button/Button'
-import axiosInstance from '../../../Axios';
 import Loading from '../../../components/UI/Loading/Loading';
 import Input from '../../../components/UI/Input/Input';
+import { saveOrder } from '../../../store/actions/order';
+import withErrorHandler from '../../../hoc/errorHandler/errorHandler';
+import axiosInstance from '../../../Axios';
 
 const contact = (props) => {
     const [stateValue, setState] = useState({
@@ -64,7 +67,6 @@ const contact = (props) => {
                 }
             }
         ], 
-        loading: false
     });
 
     let formData = {}
@@ -82,28 +84,16 @@ const contact = (props) => {
         }
 
         const order = {
-        ingredients: props.ingredients,
-        price: props.totalPrice,
-        customerDetails: formData
-        };
-
-        axiosInstance.post("/orders.json", order)
-        .then((res) => {
-            console.log(res);
-            /* setState({ loading: false}); --> this was throwing an error map of 
-            undefined and fix is the coverting all setState to functional setStates*/
-            setState((prev) => ({ ...prev, loading: false }));
-            props.history.push('/');
-        })
-        .catch((err) => {
-            console.log(err);
-            setState((prev) => ({ ...prev, loading: false }));
-            props.history.push('/');
-        });
+            ingredients: props.ings,
+            price: props.totalPrice,
+            customerDetails: formData
+            };
+            
+            props.onPurchasingOrder(order, props.history);
         }
 
         let form;
-        if(!stateValue.loading) {
+        if(!props.loading) {
             form = (
                 <div className={classes.Contact}>
                 <h3>Enter Your Contact Address</h3>
@@ -134,4 +124,19 @@ const contact = (props) => {
     )
 }
 
-export default withRouter(contact);
+const mapStateToProps = state => {
+    return {
+        ings: state.ingredients,
+        totalPrice: state.totalPrice,
+        loading: state.loading,
+        error: state.error
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+return {
+        onPurchasingOrder: (order, route) => dispatch(saveOrder(order, route))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)  (withRouter(withErrorHandler(contact, axiosInstance)));
