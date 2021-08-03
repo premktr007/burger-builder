@@ -1,10 +1,10 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import CheckoutOrder from '../../components/Order/CheckoutOrder/CheckoutOrder';
 import Contact from '../Checkout/Contact/Contact'
-import { connect } from 'react-redux';
-
+import { resetIngredients } from '../../store/actions/order';
 /* FOR REFERENCE. commented this after adding redux */
 const checkout = (props) => {
 
@@ -29,6 +29,7 @@ const checkout = (props) => {
 
     const cancelHandler = () => {
         props.history.goBack();
+        props.changePrice();
     }
 
     const continueHandler = () => {
@@ -61,4 +62,10 @@ const mapStateToProps = state => {
     
 }
 
-export default connect(mapStateToProps)(checkout);
+const mapDispatchToProps = dispatch => {
+    return {
+        changePrice: () => dispatch(resetIngredients())
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(checkout);

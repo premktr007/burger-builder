@@ -62,6 +62,7 @@ const resetIngredients = (state) => {
             cheese: 0,
             meat: 0,
         },
+        totalPrice: 60,
         loading: false,
         error: false
     }
