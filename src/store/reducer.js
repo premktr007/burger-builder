@@ -1,11 +1,16 @@
 import * as actionType from './actions/actionTypes';
 
 const intialState = {
+    auth: {
+        token: null,
+        userId: null,
+    },
     ingredients: null,
     totalPrice: 60,
     orders: null,
     loading: false,
-    error: false
+    error: false,
+
 }
 
 const INGREDIENT_PRICES = {
@@ -15,28 +20,33 @@ const INGREDIENT_PRICES = {
     cheese: 20,
 };
 
-const addIngredient = (state, action) => {
+// AUTENTICATION LOGIN
+const setLogin = (state, action) => {
     return {
         ...state,
-        ingredients: {
-            ...state.ingredients,
-            [action.ingredient] : state.ingredients[action.ingredient] + 1
+        auth: {
+            ...state.auth,
+            token: action.authData.token,
+            userId: action.authData.userId
         },
-        totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredient]
+        error: false,
+        loading: false
     }
 }
 
-const removeIngredient = (state, action) => {
+// AUTHENTICATION LOGOUT
+const setLogout = (state) => {
     return {
         ...state,
-        ingredients: {
-            ...state.ingredients,
-            [action.ingredient] : state.ingredients[action.ingredient] - 1
-        },
-        totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredient]
+        auth: {
+            ...state.auth,
+            token: null,
+            userId: null
+        }
     }
 }
 
+// INTIAL INGREDIENT STATE
 const setIngredients = (state, action) => {
     return {
         ...state,
@@ -53,6 +63,32 @@ const setIngredients = (state, action) => {
     }
 }
 
+
+// ADDING INGREDIENT
+const addIngredient = (state, action) => {
+    return {
+        ...state,
+        ingredients: {
+            ...state.ingredients,
+            [action.ingredient] : state.ingredients[action.ingredient] + 1
+        },
+        totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredient]
+    }
+}
+
+// REMOVE INGREDIENT
+const removeIngredient = (state, action) => {
+    return {
+        ...state,
+        ingredients: {
+            ...state.ingredients,
+            [action.ingredient] : state.ingredients[action.ingredient] - 1
+        },
+        totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredient]
+    }
+}
+
+// RESETTING INGREDIENT
 const resetIngredients = (state) => {
     return {
         ...state,
@@ -68,6 +104,8 @@ const resetIngredients = (state) => {
     }
 }
 
+
+// LOADING
 const setLoading = (state) => {
     return {
         ...state,
@@ -75,15 +113,28 @@ const setLoading = (state) => {
     }
 }
 
-const throwError = (state) => {
+// ERROR
+const throwError = (state, action) => {
     return {
         ...state,
-        error: true
+        loading: false,
+        error: action.error
     }
 }
 
+// REDUCER
 const reducer = (state = intialState, action) => {
     switch (action.type) {
+
+        case actionType.AUTH_LOGIN:
+            return setLogin(state, action);
+
+        case actionType.AUTH_LOGOUT:
+            return setLogout(state)
+            
+        case actionType.INIT_INGREDIENTS:
+            return setIngredients(state, action);
+
         case actionType.ADD_INGREDIENT:
             return addIngredient(state, action);
 
@@ -93,17 +144,14 @@ const reducer = (state = intialState, action) => {
         case actionType.RESET_INGREDIENTS:
             return resetIngredients(state);
 
-        case actionType.INIT_INGREDIENTS:
-            return setIngredients(state, action);
-        
         case actionType.LOADING:
             return setLoading(state);
             
         case actionType.FAILED_CALL:
-            return throwError(state);
+            return throwError(state, action);
         
         default:
-        return state;
+            return state;
     }
 }
 

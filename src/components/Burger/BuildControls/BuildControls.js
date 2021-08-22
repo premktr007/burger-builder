@@ -28,7 +28,7 @@ const buildControls = (props) => (
       className={classes.OrderButton}
       onClick={props.purchasing}
     >
-      ORDER NOW
+      { props.isAuth ? 'ORDER NOW' : 'AUTHENTICATE'}
     </button>
   </div>
 );

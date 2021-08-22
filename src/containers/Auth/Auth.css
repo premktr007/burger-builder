@@ -1,0 +1,27 @@
+h2 {
+    text-align: center;
+}
+
+.Auth {
+    margin: 20px auto;
+    width: 80%;
+    text-align: center;
+    box-shadow: 5px 5px 10px #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.Auth input {
+    display: block;
+}
+
+.ErrorMsg {
+    text-align: center;
+    color: red;
+}
+
+@media (max-width: 600px) {
+    .Auth {
+        width: 500px;
+    }
+}

@@ -1,6 +1,6 @@
 import React from 'react';
 import Burger from '../../Burger/Burger';
-import Button from '../../UI/button/Button';
+import Button from '../../UI/Button/Button';
 import classes from './CheckoutOrder.css'
 
 const checkoutOrder = (props) => {

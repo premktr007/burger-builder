@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 
 import axiosInstance from '../../Axios';
 import Order from '../../components/Order/Order';
 import Loading from '../../components/UI/Loading/Loading';
 import errorHandler from '../../hoc/errorHandler/errorHandler';
 
-const orders = () => {
+const orders = (props) => {
     const [stateValue, setState] = useState({
         orders: [],
         loading: true
@@ -13,12 +14,12 @@ const orders = () => {
 
     // getting the orders
     useEffect(() => {
-        axiosInstance.get('/orders.json').then(res => {
+        const queryParams = `?auth=${props.token}&orderBy="userId"&equalTo="${props.userId}"`;
+        axiosInstance.get('/orders.json'+ queryParams).then(res => {
             transformData(res);
             /* functional components will have functional setStates */
             setState(prevState => ({ ...prevState, loading: false}));  
         }).catch(err => {
-            console.log(err)
             setState(prevState => ({ ...prevState, loading: false}));  
         });
     }, []);
@@ -53,11 +54,10 @@ const orders = () => {
     
     let orders;
 
-            
     if(stateValue.loading) {
         orders = <Loading />
     }
-    else if(stateValue.orders.length === 0) {
+    else if(stateValue.orders.length === 0 && props.token) {
         orders = <h1 style={{textAlign: "center"}}>There are no orders yet.</h1>
     }
     else {
@@ -76,4 +76,11 @@ const orders = () => {
     )
 }
 
-export default errorHandler(orders, axiosInstance);
+const mapStateToProps = state => {
+    return {
+        token: state.auth.token,
+        userId: state.auth.userId
+    }
+}
+
+export default connect(mapStateToProps) (errorHandler(orders, axiosInstance));

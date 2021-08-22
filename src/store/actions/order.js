@@ -1,6 +1,77 @@
+import axios from 'axios';
+
 import * as actionTypes from './actionTypes';
 import axiosInstance from '../../Axios';
 
+// AUTHENTICATION
+const auth = (email, password, isSignUp, router) => {
+    return dispatch => {
+        dispatch(loading());
+        const body = {
+            email: email,
+            password: password,
+            returnSecureToken: true
+        }
+
+        let url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCZyG--k82Lj1l2mZl7NsV8U6SHQc1U-8U`;
+        if (!isSignUp) {
+            url =  `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCZyG--k82Lj1l2mZl7NsV8U6SHQc1U-8U`;
+        }
+
+        axios.post(url, body).then(res => {
+            // storing token for auto-login
+            const expirationDate = new Date(new Date().getTime() + (+res.data.expiresIn * 1000));
+            localStorage.setItem('token', res.data.idToken);
+            localStorage.setItem('expiryDate', expirationDate);
+            localStorage.setItem('userId', res.data.localId)
+
+            dispatch(setAuthLogin(res.data.idToken, res.data.localId));
+            dispatch(isTokenExpired(+res.data.expiresIn))
+            // router.replace('/');
+        }).catch(err => {
+            dispatch(failedCall(err.response.data.error));
+        })
+    }
+}
+
+const authLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('expiryDate');
+        localStorage.removeItem('userId');
+        // dispatch(setAuthLogout());
+        return {
+            type: actionTypes.AUTH_LOGOUT,
+        }
+}
+
+// checking for auto login
+const checkAuthState = () => {
+    return dispatch => {
+        const token  = localStorage.getItem('token');
+        const expirationDate = new Date(localStorage.getItem('expiryDate'));
+
+        if(!token || expirationDate < new Date()) {
+            dispatch(setAuthLogout());
+        }
+        else {
+            const userId = localStorage.getItem('userId');
+            dispatch(setAuthLogin(token, userId));
+            dispatch(isTokenExpired((expirationDate.getTime() - new Date().getTime()) / 1000 ));
+        }
+    }
+    
+}
+
+// Logout after token is expired
+const isTokenExpired = (timer) => {
+    return dispatch => {
+        setInterval(() => {
+            dispatch(authLogout());
+        }, timer*1000);
+    }
+} 
+
+// INTIAL INGREDIENTS TATE
 const getIngredients = () => {
     return dispatch => {
         dispatch(loading());
@@ -8,26 +79,45 @@ const getIngredients = () => {
         axiosInstance.get("/ingredients.json").then((res) => {
             dispatch(initIngredients(res.data));
         }).catch((err) => {
-            dispatch(failedCall());
+            dispatch(failedCall(err));
         });
     }
 }
 
-const saveOrder = (order, route) => {
+// SAVING ORDER
+const saveOrder = (order, route, token) => {
     return dispatch => {
         dispatch(loading());
-        axiosInstance.post('/orders.json', order)
+        axiosInstance.post('/orders.json?auth='+token, order)
         .then((res) => {
             dispatch(resetIngredients());
             route.push('/orders');
         })
         .catch((err) => {
-            dispatch(failedCall());
+            dispatch(failedCall(err));
             route.push('/');
         });
         
     }
 }
+
+
+const setAuthLogin = (token, userId) => {
+    return {
+        type: actionTypes.AUTH_LOGIN,
+        authData: {
+            token:  token,
+            userId: userId
+        }
+    }
+}
+
+const setAuthLogout = () => {
+    return {
+        type: actionTypes.AUTH_LOGOUT,
+    }
+}
+
 
 const initIngredients = (ingredientsObj) => {
     return {
@@ -36,12 +126,14 @@ const initIngredients = (ingredientsObj) => {
     }
 }
 
+
 const addIngredient = (name) => {
     return {
         type: actionTypes.ADD_INGREDIENT,
         ingredient: name
     }
 }
+
 
 const removeIngredient = (name) => {
     return {
@@ -50,11 +142,13 @@ const removeIngredient = (name) => {
     }
 }
 
+
 const resetIngredients = () => {
     return {
         type: actionTypes.RESET_INGREDIENTS,
     }
 }
+
 
 const loading = () => {
     return {
@@ -62,10 +156,12 @@ const loading = () => {
     }
 }
 
-const failedCall = () => {
+
+const failedCall = (error) => {
     return {
-        type: actionTypes.FAILED_CALL
+        type: actionTypes.FAILED_CALL,
+        error: error.message
     }
 }
 
-export { getIngredients, addIngredient, removeIngredient, resetIngredients, saveOrder }
+export { auth, getIngredients, addIngredient, removeIngredient, resetIngredients, saveOrder, authLogout, checkAuthState }
