@@ -1,12 +1,17 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import CheckoutOrder from '../../components/Order/CheckoutOrder/CheckoutOrder';
 import Contact from '../Checkout/Contact/Contact'
 import { resetIngredients } from '../../store/actions/order';
 /* FOR REFERENCE. commented this after adding redux */
 const checkout = (props) => {
+
+    const dispatch = useDispatch();
+    const changePrice = () => dispatch(resetIngredients());
+
+    const ings = useSelector(state => state.ingredients);
 
     // using custom willMount custom react hook for getting ingridents before render() 
     // useWillMount(() => {
@@ -29,7 +34,7 @@ const checkout = (props) => {
 
     const cancelHandler = () => {
         props.history.goBack();
-        props.changePrice();
+        changePrice();
     }
 
     const continueHandler = () => {
@@ -39,10 +44,10 @@ const checkout = (props) => {
     let summary;
     summary = <Redirect to="/" />
 
-    if(props.ings) {
+    if(ings) {
         summary = (
             <div>
-            <CheckoutOrder ingredients={props.ings} 
+            <CheckoutOrder ingredients={ings} 
                 cancelled={cancelHandler} 
                 continue={continueHandler}/>
             <Route path={props.match.path + '/contact'} 
@@ -54,18 +59,4 @@ const checkout = (props) => {
     return summary;
 }
 
-const mapStateToProps = state => {
-    return {
-        ings: state.ingredients,
-        totalPrice: state.totalPrice
-    }
-    
-}
-
-const mapDispatchToProps = dispatch => {
-    return {
-        changePrice: () => dispatch(resetIngredients())
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(checkout);
+export default checkout;
